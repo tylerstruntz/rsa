@@ -10,5 +10,5 @@ make all
 ## Example Usage
 
 ```
-./rsa
+./a.out
 ```
