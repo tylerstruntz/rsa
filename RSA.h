@@ -5,30 +5,24 @@
 #include <iostream>
 #include "InfInt.h"
 
+class Rsa {
 
-class Rsa{
+public:
+  //Constructor
+  Rsa() { initialize(); };
 
-  public:
-    //Constructor
-    Rsa(){initialize();};
+  //Member functions
+  void initialize(); //initializes all private variables
 
-    //Member functions
-    void initialize(); //initializes all private variables
+  void encrypt(std::string fileName);
+  //InfInt decrypt(InfInt ciphertext);
 
-    void readIntoBlock();
-
-
-    //InfInt encrypt(InfInt plaintext);
-    //InfInt decrypt(InfInt ciphertext);
-
-
-  private:
-
-    //Private fields
-    InfInt p;
-    InfInt q;
-    InfInt n;
-    InfInt sigN;
-    InfInt e, d;
+private:
+  //Private fields
+  InfInt p;
+  InfInt q;
+  InfInt n;
+  InfInt sigN;
+  InfInt e, d;
 };
 #endif

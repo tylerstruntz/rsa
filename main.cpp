@@ -3,8 +3,8 @@
 
 int main() {
   Rsa connection;
-  
 
+  connection.encrypt("test.txt");
 
   return 0;
 }

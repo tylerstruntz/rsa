@@ -3,7 +3,7 @@
 #include <fstream>
 #include <string>
 #include <iomanip>
-const int blockSize = 3;
+
 /*
 //Recursive extended euclidean algorithm
 InfInt xGCD(InfInt a, InfInt b, InfInt &x, InfInt &y) {
@@ -25,32 +25,6 @@ InfInt xGCD(InfInt a, InfInt b, InfInt &x, InfInt &y) {
 }
 */
 
-// read in text file and break into blocks
-void Rsa::readIntoBlock() {
-  char tempBuffer[blockSize];
-
-  std::ifstream inFile;
-  inFile.open("ranText.txt");
-
-  while(!EOF) {
-    //get length of file
-    inFile.seekg(0, inFile.end);
-    size_t length = inFile.tellg();
-    inFile.seekg(0, inFile.end);
-
-    //making sure of no overflow
-    if (length > sizeof tempBuffer) {
-      length = sizeof tempBuffer;
-    }
-
-    //reads file
-    inFile.read(tempBuffer, length);
-
-  }
-
-}
-
-
 //Initializes all private members for the RSA algorithm
 void Rsa::initialize() {
   std::ifstream infile;
@@ -59,11 +33,11 @@ void Rsa::initialize() {
   infile >> p;
   infile >> q;
 
-  n    = p * q;
-  e    = 65537;
-  sigN = (p-1)*(q-1);
+  n = p * q;
+  e = 65537;
+  sigN = (p - 1) * (q - 1);
 
-/*
+  /*
   //// EUCLIDEAN algorithm /////
   InfInt a,b,q,x,lastx,y,lasty,temp,temp1,temp2,temp3;
   a=54;
@@ -98,31 +72,73 @@ void Rsa::initialize() {
   //////////////////////////////
 */
 
-
   //Finds d in a naive way
-  InfInt i=1;
-  InfInt iTnP1 = i*n;
+  InfInt i = 1;
+  InfInt iTnP1 = i * n;
   iTnP1 = iTnP1 + 1;
-  while(iTnP1 % e != 0){
-    i=i+1;
-    iTnP1 = i*n;
+  while (iTnP1 % e != 0) {
+    i = i + 1;
+    iTnP1 = i * n;
     iTnP1 = iTnP1 + 1;
   }
-  iTnP1 = i*n;
+  iTnP1 = i * n;
   iTnP1 = iTnP1 + 1;
-  d=iTnP1/e;
+  d = iTnP1 / e;
 
+  InfInt temp4 = e * d;
+  temp4 = temp4 % n;
 
-  InfInt temp4 = e*d;
-  temp4 = temp4%n;
-
-  std::cout << " this is p " << p << std::endl;
-  std::cout <<  "this is q " << q << std::endl << std::endl;
-  std::cout << "this is n " << n << std::endl << std::endl;
-  std::cout << "this is sigN " << sigN << std::endl << std::endl;
-  std::cout << "this is e " << e << std::endl;
-  std::cout << "this is d " << d << std::endl;
-
+  //std::cout << temp4 << std::endl;
+  //std::cout << temp4 << std::endl;
+  std::cout << "P: " << p << std::endl << std::endl;
+  std::cout << "Q: " << q << std::endl << std::endl;
+  std::cout << "N: " << n << std::endl << std::endl;
+  std::cout << "sigN: " << sigN << std::endl << std::endl;
+  std::cout << "e: " << e << std::endl << std::endl;
+  std::cout << "d: " << d << std::endl << std::endl;
 
   infile.close();
+}
+
+void Rsa::encrypt(std::string fileName)
+{
+  std::string s;
+  int blockSize = 3;
+
+  std::ifstream infile(fileName, std::ifstream::binary);
+  if (infile) {
+    // get length of file:
+    infile.seekg(0, infile.end);
+    int length = infile.tellg();
+    infile.seekg(0, infile.beg);
+
+    //initialize a buffer
+    char *buffer = new char[blockSize];
+    int *bufferAsInts = new int[blockSize];
+
+    int pos = 0;
+    while (pos < length) {
+      //pack buffer of chars from file
+      infile.read(buffer, blockSize);
+
+      //convert chars to ints and pack in new buffer
+      for (int i = 0; i < blockSize; i++) {
+        bufferAsInts[i] = (int)buffer[i];
+      }
+
+      for (int i = 0; i < blockSize; i++) {
+        std::cout << bufferAsInts[i] << " ";
+      }
+      std::cout << std::endl;
+
+      //move to the next block
+      pos += blockSize;
+      infile.seekg(pos, infile.beg);
+    }
+
+    infile.close();
+
+    delete[] buffer;
+    delete[] bufferAsInts;
+  }
 }
