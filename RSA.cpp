@@ -1,9 +1,12 @@
 #include "RSA.h"
 #include <cstring>
+#include <math.h>
 #include <fstream>
 #include <string>
 #include <iomanip>
 const int  blockSize = 3;
+const InfInt cubed = 26*26*26;
+const InfInt squared = 26*26;
 
 
 /*
@@ -149,8 +152,16 @@ void Rsa::breakMessageToBlock(std::string fileName)
 }
 
 void Rsa::encryptBlock(int buffer[]) {
+  char eBuffer[4];
+  InfInt eMessage, tempMessage1, tempMessage2, tempMessage3, tempMessage4, encipheredTrigraph;
   for(int i = 0; i != 1; i++) {
-    InfInt eMessage = ((buffer[i]) * (26*26) + (buffer[i + 1]) * (26) + (buffer[i + 2]));
-    std::cout << eMessage << std::endl;
+    eMessage = ((buffer[i]) * (26*26) + (buffer[i + 1]) * (26) + (buffer[i + 2]));
   }
+
+  /*  TODO: emessage needs to be raised to our generated e to produce our trigraph code.
+            the tripgraph code then needs to do (((TGC / 26^3)%26)+ 65). this is the first quadgraph number.
+            do the computation 3 more times decrementing 26^3 by 1 until the fourth time then you do ((TGC%26) +65)
+            these four numbers then need to be converted to ascii characters and sent to a text file 
+            for decryption
+  */
 }
