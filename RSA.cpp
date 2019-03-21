@@ -116,12 +116,21 @@ void Rsa::initialize() {
   InfInt temp4 = e*d;
   temp4 = temp4%n;
 
+<<<<<<< HEAD
   std::cout << " this is p " << p << std::endl;
   std::cout <<  "this is q " << q << std::endl << std::endl;
   std::cout << "this is n " << n << std::endl << std::endl;
   std::cout << "this is sigN " << sigN << std::endl << std::endl;
   std::cout << "this is e " << e << std::endl;
   std::cout << "this is d " << d << std::endl;
+=======
+  std::cout << p << std::endl;
+  std::cout << q << std::endl << std::endl;
+  std::cout << n << std::endl << std::endl;
+  std::cout << sigN << std::endl << std::endl;
+  std::cout << e << std::endl;
+  std::cout << d << std::endl;
+>>>>>>> 3ebc7a7bea2a5027cd7271604c92f95b6ccaaab6
 
 
   infile.close();
