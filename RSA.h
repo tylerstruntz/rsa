@@ -15,6 +15,8 @@ class Rsa{
     //Member functions
     void initialize(); //initializes all private variables
 
+    void readIntoBlock();
+
 
     //InfInt encrypt(InfInt plaintext);
     //InfInt decrypt(InfInt ciphertext);

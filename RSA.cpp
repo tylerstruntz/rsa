@@ -3,7 +3,7 @@
 #include <fstream>
 #include <string>
 #include <iomanip>
-
+const int blockSize = 3;
 /*
 //Recursive extended euclidean algorithm
 InfInt xGCD(InfInt a, InfInt b, InfInt &x, InfInt &y) {
@@ -24,6 +24,31 @@ InfInt xGCD(InfInt a, InfInt b, InfInt &x, InfInt &y) {
     return gcd;
 }
 */
+
+// read in text file and break into blocks
+void Rsa::readIntoBlock() {
+  char tempBuffer[blockSize];
+
+  std::ifstream inFile;
+  inFile.open("ranText.txt");
+
+  while(!EOF) {
+    //get length of file
+    inFile.seekg(0, inFile.end);
+    size_t length = inFile.tellg();
+    inFile.seekg(0, inFile.end);
+
+    //making sure of no overflow
+    if (length > sizeof tempBuffer) {
+      length = sizeof tempBuffer;
+    }
+
+    //reads file
+    inFile.read(tempBuffer, length);
+    
+  }
+
+}
 
 
 //Initializes all private members for the RSA algorithm
@@ -91,13 +116,12 @@ void Rsa::initialize() {
   InfInt temp4 = e*d;
   temp4 = temp4%n;
 
-  //std::cout << temp4 << std::endl;
-  //std::cout << temp4 << std::endl;
-  //std::cout << q << std::endl << std::endl;
-  //std::cout << n << std::endl << std::endl;
-  //std::cout << sigN << std::endl << std::endl;
-  //std::cout << p%e << std::endl;
-  //std::cout << q%e << std::endl;
+  std::cout << " this is p " << p << std::endl;
+  std::cout <<  "this is q " << q << std::endl << std::endl;
+  std::cout << "this is n " << n << std::endl << std::endl;
+  std::cout << "this is sigN " << sigN << std::endl << std::endl;
+  std::cout << "this is e " << e << std::endl;
+  std::cout << "this is d " << d << std::endl;
 
 
   infile.close();
