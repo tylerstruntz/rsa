@@ -3,6 +3,8 @@
 #include <fstream>
 #include <string>
 #include <iomanip>
+const int  blockSize = 3;
+
 
 /*
 //Recursive extended euclidean algorithm
@@ -100,10 +102,10 @@ void Rsa::initialize() {
   infile.close();
 }
 
-void Rsa::encrypt(std::string fileName)
+void Rsa::breakMessageToBlock(std::string fileName)
 {
   std::string s;
-  int blockSize = 3;
+  
 
   std::ifstream infile(fileName, std::ifstream::binary);
   if (infile) {
@@ -126,10 +128,13 @@ void Rsa::encrypt(std::string fileName)
         bufferAsInts[i] = (int)buffer[i];
       }
 
-      for (int i = 0; i < blockSize; i++) {
-        std::cout << bufferAsInts[i] << " ";
-      }
-      std::cout << std::endl;
+      // no need for printing it out
+      // for (int i = 0; i < blockSize; i++) {
+      //   std::cout << bufferAsInts[i] << " ";
+      // }
+      // std::cout << std::endl;
+
+      encryptBlock(bufferAsInts);
 
       //move to the next block
       pos += blockSize;
@@ -140,5 +145,12 @@ void Rsa::encrypt(std::string fileName)
 
     delete[] buffer;
     delete[] bufferAsInts;
+  }
+}
+
+void Rsa::encryptBlock(int buffer[]) {
+  for(int i = 0; i != 1; i++) {
+    InfInt eMessage = ((buffer[i]) * (26*26) + (buffer[i + 1]) * (26) + (buffer[i + 2]));
+    std::cout << eMessage << std::endl;
   }
 }

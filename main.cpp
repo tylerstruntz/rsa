@@ -4,7 +4,7 @@
 int main() {
   Rsa connection;
 
-  connection.encrypt("test.txt");
+  connection.breakMessageToBlock("ranText.txt");
 
   return 0;
 }
