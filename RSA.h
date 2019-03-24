@@ -14,10 +14,11 @@ public:
   //Member functions
   void initialize(); //initializes all private variables
 
-  void breakMessageToBlock(std::string fileName);
-  //InfInt decrypt(InfInt ciphertext);
+  void encryptMessage(std::string fileName);
+  void decryptMessage(std::string fileName);
 
-  void encryptBlock(int[]);
+  std::string decryptBlock(InfInt buffer[]);
+  std::string encryptBlock(InfInt buffer[]);
 
 private:
   //Private fields
@@ -26,6 +27,6 @@ private:
   InfInt n;
   InfInt sigN;
   InfInt e, d;
-  
+
 };
 #endif
