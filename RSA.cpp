@@ -135,7 +135,7 @@ void Rsa::initialize() {
 
   bool foundE = false, foundD = false;
   InfInt GCD;
-  e = 7333;
+  e = 65537;
 
   while (!foundE || !foundD) {
     GCD = xGCD(sigN, e, x, y);
@@ -222,12 +222,7 @@ void Rsa::encryptMessage(std::string fileName){
 
       //encrypt the block and write it to the outfile
       std::string ciphertext = encryptBlock(bufferAsInts);
-      std::cout << ciphertext;
       outfile << ciphertext.c_str();
-      //char cipherAsCStr[blockSizeD];
-      //strcpy(cipherAsCStr, ciphertext.c_str());
-      //for (int i = 0; i<blockSizeD; i++)
-        //outfile << cipherAsCStr[i];
 
       //move to the next block
       pos += blockSizeE;
@@ -252,67 +247,6 @@ void Rsa::encryptMessage(std::string fileName){
 
 
 
-//Takes a block of 3 characters, represented by their ascii value, and converts
-// it into a 4 char ciphertext string
-std::string Rsa::encryptBlock(InfInt buffer[]) {
-  //std::cout << "Quad: ";
-
-  //for (int i=0; i<3; i++)
-    //std::cout << buffer[i] << " ";
-
-  //std::cout << std::endl;
-
-  //find the trigraph code
-  InfInt trigraphCode;
-  InfInt temp;
-
-  temp         = buffer[0]-65;
-  trigraphCode = temp*squared;
-  temp         = buffer[1]-65;
-  temp         = temp*base;
-  trigraphCode = trigraphCode + temp;
-  temp         = buffer[2]-65;
-  trigraphCode = trigraphCode + temp;
-
-  //find the enciphered trigraph code using modular exponentiation
-  InfInt encipheredCode = modularExp(trigraphCode, e, n);
-
-  //convert into quadragraph
-  InfInt quadragraph[4];
-  temp = 0;
-
-  temp           = encipheredCode/cubed;
-  temp           = temp % base;
-  quadragraph[0] = temp + 65;
-  temp           = encipheredCode/squared;
-  temp           = temp % base;
-  quadragraph[1] = temp + 65;
-  temp           = encipheredCode/base;
-  temp           = temp % base;
-  quadragraph[2] = temp + 65;
-  temp           = encipheredCode % base;
-  quadragraph[3] = temp + 65;
-
-
-  //convert quadragraph into ints, then chars
-  int  asInts[4];
-  char cipher[5];
-  for (int i=0; i<4; i++){
-    //std::cout << quadragraph[i] << " ";
-    asInts[i] = quadragraph[i].toInt();
-    cipher[i] = (char)asInts[i];
-  }
-  cipher[4] = '\0';
-
-  //std::cout << std::endl;
-  std::string ciphertext = cipher;
-
-  return ciphertext;
-}
-
-
-
-
 //Reads the infile (ciphertext) block by block, converts the
 // block into plaintext using decryptBlock(buffer), and prints
 // the decrypted block into an outfile
@@ -323,6 +257,10 @@ void Rsa::decryptMessage(std::string fileName){
   std::ifstream infile(fileName, std::ifstream::binary);
   std::cout << "Decrypting " << fileName.c_str() << std::endl;
 
+  //open an outfile to write to
+  std::ofstream outfile;
+  outfile.open("decryptedMessage.txt");
+
   if (infile) {
     // get length of file:
     infile.seekg(0, infile.end);
@@ -330,95 +268,78 @@ void Rsa::decryptMessage(std::string fileName){
     infile.seekg(0, infile.beg);
 
     //initialize a buffer
-    char *buffer = new char[blockSizeD];
-    InfInt *bufferAsInts = new InfInt[blockSizeD];
+    InfInt *buffer= new InfInt[blockSizeE];
 
-    //There is no null padding since ciphertext from an encrypted message
-    // is always a multiple of 4.
 
     //pos counter to keep track of where we are in the file
     int pos = 0;
 
     //while the pos is less than the length of the file, grab blocks of chars
     // from the file and decrypt them
-    while (pos < length) {
-      //pack buffer of chars from file
-      infile.read(buffer, blockSizeD);
-      std::cout << buffer << " ";
-
-      //convert chars to ints and pack in new buffer
-      for (int i = 0; i < blockSizeD; i++)
-          bufferAsInts[i] = (int)buffer[i];
-
-      /*
-      for (int i=0; i<blockSizeD; i++)
-        std::cout << bufferAsInts[i] << " ";
-      std::cout << std::endl;
-      */
+    while (infile) {
+      //pack buffer with ints from file
+      infile >> buffer[0];
+      infile >> buffer[1];
+      infile >> buffer[2];
 
       //decrypt the block
-      std::string plaintext = decryptBlock(bufferAsInts);
-      //std::cout << plaintext.c_str();
+      std::string plaintext = decryptBlock(buffer);
+      outfile << plaintext.c_str();
 
-      //move to the next block
-      pos += blockSizeD;
-      infile.seekg(pos, infile.beg);
     }
 
     std::cout << std::endl;
     infile.close();
+    outfile.close();
 
     delete[] buffer;
-    delete[] bufferAsInts;
   }
-
 }
 
 
-std::string Rsa::decryptBlock(InfInt buffer[]) {
-
-  //Find the code (numeric representation) of quadragraph
-  InfInt code;
-  InfInt temp;
 
 
-  temp = buffer[0]-65;
-  code = temp * cubed;
-  temp = buffer[1]-65;
-  temp = temp * squared;
-  code = code + temp;
-  temp = buffer[2]-65;
-  temp = temp * base;
-  code = code + temp;
-  temp = buffer[3]-65;
-  code = code + temp;
+//Takes a block of 3 characters, represented by their ascii value, and converts
+// each one of them into a ciphertext number. The three numbers are packed into a
+// string, delimited by spaces, and returned.
+std::string Rsa::encryptBlock(InfInt buffer[]) {
+  InfInt output[3];
+  std::stringstream ss;
+  std::string space = " ";
 
-
-  //decipher the quadragraph code
-  InfInt decipheredCode = modularExp(code, d, n);
-
-  //make into a trigraph
-  InfInt trigraph[3];
-  temp        = decipheredCode/squared;
-  trigraph[0] = temp + 65;
-  temp        = decipheredCode/base;
-  temp        = temp % base;
-  trigraph[1] = temp + 65;
-  temp        = decipheredCode%base;
-  trigraph[2] = temp + 65;
-
-
-
-  //convert trigraph into ints, then chars
-  int  asInts[3];
-  char cipher[4];
-  for (int i=0; i<3; i++){
-    //std::cout << quadragraph[i] << " ";
-    asInts[i] = trigraph[i].toInt();
-    cipher[i] = (char)asInts[i];
+  //encrypt text with m^e mod n, pack each result into a stringstream
+  for (int i=0; i<blockSizeE; i++) {
+    output[i] = modularExp(buffer[i], e, n);
+    ss << output[i];
+    ss << space;
   }
 
-  std::cout << "Trigraph: " << cipher[0] << "  " << cipher[1] << "  " << cipher[2] << std::endl;
+  std::string ciphertext = ss.str();
 
-  return "H";
+  return ciphertext;
+}
+
+
+//Takes blocks of ciphertext ints from the infile, decrypts them, and converts
+// them back to their original 3 char blocks
+std::string Rsa::decryptBlock(InfInt buffer[]) {
+  InfInt decrypt[3];
+  int asInts[3];
+  char asChars[3];
+  std::stringstream ss;
+
+  //Decrypt, convert to the result to an int (which will be an ascii value),
+  // and convert each ascii value into it's corresponding char. Pack chars into
+  // a string to later return.
+  for (int i=0; i<blockSizeE; i++) {
+    decrypt[i] = modularExp(buffer[i], d, n);
+    asInts[i]  = decrypt[i].toInt();
+    asChars[i] = (char)asInts[i];
+    if (asChars[i] != '0') //we don't care about padding
+      ss << asChars[i];
+  }
+
+  std::string plaintext = ss.str();
+
+  return plaintext;
 }
